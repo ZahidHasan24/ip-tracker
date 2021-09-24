@@ -14,37 +14,7 @@
       "
     >
       <!-- Search Input -->
-      <div class="w-full max-w-screen-sm">
-        <h1 class="text-white text-center text-3xl pb-4">IP Addrss Tracker</h1>
-        <div class="flex">
-          <input
-            class="
-              flex-1
-              py-3
-              px-2
-              rounded-tl-md rounded-bl-md
-              focus:outline-none
-            "
-            type="text"
-            placeholder="Search for any IP Adress or leave empty to get your ip info"
-            v-model="queryIp"
-          />
-          <i
-            class="
-              cursor-pointer
-              bg-black
-              text-white
-              px-4
-              rounded-tr-md rounded-br-md
-              flex
-              items-center
-              fas
-              fa-chevron-right
-            "
-            @click="getIpInfo"
-          />
-        </div>
-      </div>
+      <Search v-model="queryIp" :getIpInfo="getIpInfo" />
       <!-- IPInfo -->
       <IPInfo v-if="ipInfo" :ipInfo="ipInfo" />
     </div>
@@ -58,11 +28,13 @@
 import leaflet from "leaflet";
 import { onMounted, ref } from "vue";
 import IPInfo from "@/components/IPInfo.vue";
+import Search from "@/components/Search.vue";
 
 export default {
   name: "Home",
   components: {
     IPInfo,
+    Search,
   },
   setup() {
     let mymap;
@@ -91,13 +63,11 @@ export default {
     });
 
     const getIpInfo = async () => {
-      console.log(queryIp.value)
       try {
         const res = await fetch(
           `https://geo.ipify.org/api/v1?apiKey=${geo_token}&ipAddress=${queryIp.value}`
         );
         const data = await res.json();
-        console.log(data)
         ipInfo.value = {
           address: data.ip,
           state: data.location.region,
@@ -109,10 +79,9 @@ export default {
         leaflet.marker([ipInfo.value.lat, ipInfo.value.lng]).addTo(mymap);
         mymap.setView([ipInfo.value.lat, ipInfo.value.lng], 13);
       } catch (err) {
-        console.log({err})
+        console.log({ err });
       }
     };
-
     return {
       queryIp,
       ipInfo,
