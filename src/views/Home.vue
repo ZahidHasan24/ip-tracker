@@ -27,6 +27,7 @@
             "
             type="text"
             placeholder="Search for any IP Adress or leave empty to get your ip info"
+            v-model="queryIp"
           />
           <i
             class="
@@ -40,11 +41,12 @@
               fas
               fa-chevron-right
             "
+            @click="getIpInfo"
           />
         </div>
       </div>
       <!-- IPInfo -->
-      <IPInfo />
+      <IPInfo v-if="ipInfo" :ipInfo="ipInfo" />
     </div>
     <!-- Map -->
     <div id="mapid" class="h-full z-10"></div>
@@ -54,7 +56,7 @@
 <script>
 // @ is an alias to /src
 import leaflet from "leaflet";
-import { onMounted } from "vue";
+import { onMounted, ref } from "vue";
 import IPInfo from "@/components/IPInfo.vue";
 
 export default {
@@ -64,14 +66,17 @@ export default {
   },
   setup() {
     let mymap;
-    const token = process.env.VUE_APP_MAPBOX_TOKEN;
-    
+    const map_token = process.env.VUE_APP_MAPBOX_TOKEN;
+    const geo_token = process.env.VUE_APP_GEO_API_TOKEN;
+    const queryIp = ref("");
+    const ipInfo = ref(null);
+
     onMounted(() => {
       mymap = leaflet.map("mapid").setView([51.505, -0.99], 13);
 
       leaflet
         .tileLayer(
-          `https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=${token}`,
+          `https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=${map_token}`,
           {
             attribution:
               'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
@@ -79,11 +84,40 @@ export default {
             id: "mapbox/streets-v11",
             tileSize: 512,
             zoomOffset: -1,
-            accessToken: token,
+            accessToken: map_token,
           }
         )
         .addTo(mymap);
     });
+
+    const getIpInfo = async () => {
+      console.log(queryIp.value)
+      try {
+        const res = await fetch(
+          `https://geo.ipify.org/api/v1?apiKey=${geo_token}&ipAddress=${queryIp.value}`
+        );
+        const data = await res.json();
+        console.log(data)
+        ipInfo.value = {
+          address: data.ip,
+          state: data.location.region,
+          timezone: data.location.timezone,
+          isp: data.isp,
+          lat: data.location.lat,
+          lng: data.location.lng,
+        };
+        leaflet.marker([ipInfo.value.lat, ipInfo.value.lng]).addTo(mymap);
+        mymap.setView([ipInfo.value.lat, ipInfo.value.lng], 13);
+      } catch (err) {
+        console.log({err})
+      }
+    };
+
+    return {
+      queryIp,
+      ipInfo,
+      getIpInfo,
+    };
   },
 };
 </script>
