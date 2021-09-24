@@ -14,15 +14,20 @@
           <i class="cursor-pointer bg-black text-white px-4 rounded-tr-md rounded-br-md flex items-center fas fa-chevron-right" />
         </div>
       </div>
+      <!-- IPInfo -->
+      <IPInfo />
     </div>
   </div>
 </template>
 
 <script>
 // @ is an alias to /src
-
+import IPInfo from '@/components/IPInfo.vue'
 
 export default {
   name: 'Home',
+  components: {
+    IPInfo,
+  }
 }
 </script>
