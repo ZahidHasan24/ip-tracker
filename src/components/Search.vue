@@ -1,9 +1,21 @@
 <template>
   <div class="w-full max-w-screen-sm">
-    <h1 class="text-white text-center text-3xl pb-4">IP Addrss Tracker</h1>
+    <h1
+      class="text-center text-3xl pb-4"
+      :class="{
+        'text-white': !darkMode,
+        'text-black': darkMode,
+      }"
+    >
+      IP Addrss Tracker
+    </h1>
     <div class="flex">
       <input
         class="flex-1 py-3 px-2 rounded-tl-md rounded-bl-md focus:outline-none"
+        :class="{
+          'text-white bg-black placeholder-white': darkMode,
+          'text-black bg-white placeholder-gray': !darkMode,
+        }"
         type="text"
         placeholder="Search for any IP Adress or leave empty to get your ip info"
         v-model="input"
@@ -12,8 +24,6 @@
       <i
         class="
           cursor-pointer
-          bg-black
-          text-white
           px-4
           rounded-tr-md rounded-br-md
           flex
@@ -21,6 +31,10 @@
           fas
           fa-chevron-right
         "
+        :class="{
+          'text-white bg-black': !darkMode,
+          'text-black bg-white': darkMode,
+        }"
         @click="getIpInfo"
       />
     </div>
@@ -30,7 +44,7 @@
 <script>
 import { ref } from "vue";
 export default {
-  props: ["getIpInfo"],
+  props: ["getIpInfo", "darkMode"],
   setup() {
     const input = ref("");
     return {

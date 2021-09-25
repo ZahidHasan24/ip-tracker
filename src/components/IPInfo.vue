@@ -1,5 +1,22 @@
 <template>
-  <div class="absolute -bottom-64 lg:-bottom-20 flex flex-col lg:flex-row bg-white gap-y-4 gap-x-12 px-8 pt-8 pb-12 rounded-md">
+  <div
+    class="
+      absolute
+      -bottom-64
+      lg:-bottom-20
+      flex flex-col
+      lg:flex-row
+      gap-y-4 gap-x-12
+      px-8
+      pt-8
+      pb-12
+      rounded-md
+    "
+    :class="{
+      'bg-black text-white': darkMode,
+      'bg-white text-black': !darkMode,
+    }"
+  >
     <div class="felx flex-col">
       <h3 class="text-xs mb-2 uppercase">IP Address</h3>
       <span class="text-2xl">{{ ipInfo.address }}</span>
@@ -20,6 +37,6 @@
 </template>
 <script>
 export default {
-  props: ["ipInfo"],
+  props: ["ipInfo", "darkMode"],
 };
 </script>

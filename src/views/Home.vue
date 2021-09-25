@@ -1,4 +1,11 @@
 <template>
+  <!-- Header -->
+  <Header
+    :darkMode="darkMode"
+    :toggleDarkMode="toggleDarkMode"
+    :darkModeButtonText="darkModeButtonText"
+  />
+
   <div class="flex flex-col h-screen max-h-screen">
     <!-- Search Component -->
     <div
@@ -14,9 +21,9 @@
       "
     >
       <!-- Search Input -->
-      <Search v-model="queryIp" :getIpInfo="getIpInfo" />
+      <Search v-model="queryIp" :getIpInfo="getIpInfo" :darkMode="darkMode" />
       <!-- IPInfo -->
-      <IPInfo v-if="ipInfo" :ipInfo="ipInfo" />
+      <IPInfo v-if="ipInfo" :ipInfo="ipInfo" :darkMode="darkMode" />
     </div>
     <!-- Map -->
     <div id="mapid" class="h-full z-10"></div>
@@ -26,24 +33,32 @@
 <script>
 // @ is an alias to /src
 import leaflet from "leaflet";
-import { onMounted, ref } from "vue";
+import { onMounted, ref, computed } from "vue";
 import IPInfo from "@/components/IPInfo.vue";
 import Search from "@/components/Search.vue";
+import Header from "@/components/Header.vue";
+import useDarkMode from "@/hooks/useDarkMode";
 
 export default {
   name: "Home",
   components: {
     IPInfo,
     Search,
+    Header,
   },
   setup() {
     let mymap;
+    const { darkMode, toggleDarkMode } = useDarkMode();
     const map_token = process.env.VUE_APP_MAPBOX_TOKEN;
     const geo_token = process.env.VUE_APP_GEO_API_TOKEN;
     const queryIp = ref("");
     const ipInfo = ref(null);
 
-    onMounted(() => {
+    const darkModeButtonText = computed(() => {
+      return darkMode.value ? "Light" : "Dark";
+    });
+
+    onMounted(async () => {
       mymap = leaflet.map("mapid").setView([51.505, -0.99], 13);
 
       leaflet
@@ -86,6 +101,9 @@ export default {
       queryIp,
       ipInfo,
       getIpInfo,
+      toggleDarkMode,
+      darkModeButtonText,
+      darkMode,
     };
   },
 };
