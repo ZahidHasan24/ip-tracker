@@ -58,9 +58,9 @@ export default {
       return darkMode.value ? "Light" : "Dark";
     });
 
-    onMounted(async () => {
+    onMounted(() => {
+      console.log("onMounted");
       mymap = leaflet.map("mapid").setView([51.505, -0.99], 13);
-
       leaflet
         .tileLayer(
           `https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=${map_token}`,

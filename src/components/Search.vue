@@ -42,11 +42,22 @@
 </template>
 
 <script>
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
 export default {
   props: ["getIpInfo", "darkMode"],
-  setup() {
+  setup(props, context) {
     const input = ref("");
+    onMounted(async () => {
+      try {
+        const res = await fetch("https://api.ipify.org?format=json");
+        const { ip } = await res.json();
+        input.value = ip;
+        context.emit("update:modelValue", ip);
+        props.getIpInfo();
+      } catch (err) {
+        console.log({ err });
+      }
+    });
     return {
       input,
     };
